@@ -14,7 +14,7 @@ recieve feedbacks.
 
 For installation you need only Python 2.7 and PIL:
 
-    python install.py /secret-login/
+    python install.py /admin-path/
 
 You will get password (save it)
 
