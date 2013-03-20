@@ -1,0 +1,85 @@
+.style1 {font-size:36px; font-family: 'PT Sans', sans-serif; color: #333;}
+.style2 {font-size:30px; font-family: 'PT Sans', sans-serif; color: #333;}
+.style3 {font-size:24px; font-family: 'PT Sans', sans-serif; color: #333;}
+.style4 {font-size:19px; font-family: 'PT Sans', sans-serif; color: #333;}
+.style5 {font-size:15px; font-family: 'PT Sans', sans-serif; color: #333;}
+
+/* iframe editor */
+body.wysiwyg {
+	padding: 10px 5px;
+	height: auto;
+}
+body.wysiwyg table td {
+	border: 1px solid #ccc;
+}
+body.wysiwyg div {
+/*	border: 1px solid #ccc;*/
+}
+.layout-base {
+/*	width: 960px;*/
+	width: 100%;
+	margin: 0 auto;
+}
+.layout-base td {
+	padding: 10px;
+}
+.layout-base td img {
+	margin: 10px 25px;
+	padding: 5px;
+	border: 1px solid #f4f4f4;
+}
+.layout-base td .image_left {
+	float: left;
+	width: 250px;
+	height: 250px;
+	text-align: center;
+	vertical-align: center;
+	margin: 0 10px 5px 0;
+}
+.layout-base td .image_left td {
+	text-align: center;
+	vertical-align: middle;
+}
+.layout-base .image_right {
+	float: right;
+	width: 250px;
+	height: 250px;
+	text-align: center;
+	vertical-align: center;
+	margin: 0 10px 5px 0;
+}
+.layout-base .image_right td {
+	text-align: center;
+	vertical-align: middle;
+}
+.layout-base .top_block {
+}
+.layout-base .bottom_block {
+}
+.layout-base .cells table {
+	width: 940px;
+	margin: 0 auto;
+}
+.layout-base .two_col {
+	width:50%;
+	vertical-align: top;
+}
+
+/* overlay */
+.hide {
+	display: none;
+}
+.ui-widget-overlay, #overlay, .piro_overlay {
+	position:fixed;
+    top:0;
+    left:0;
+    height:100%;
+    width:100%;
+    margin:0;
+    padding:0;
+    background:#000;
+    opacity:.50;
+    filter: alpha(opacity=50);
+    -moz-opacity: 0.50;
+    z-index:101;
+}

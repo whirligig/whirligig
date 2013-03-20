@@ -1,0 +1,4 @@
+name: default
+author: noname
+navigation: main, bottom
+use logo: no

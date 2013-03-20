@@ -1,0 +1,95 @@
+div.wysiwyg { border: 1px solid #333; padding: 0; background-color: #fff; }
+div.wysiwyg * { margin: 0; padding: 0; }
+
+div.wysiwyg ul.toolbar li.jwysiwyg-custom-command { overflow: hidden; }
+
+div.wysiwyg ul.toolbar { border-bottom: 1px solid #333; width: 100%; margin:0 auto; padding: 0; overflow: hidden; height: auto;}
+div.wysiwyg ul.toolbar li { list-style: none; float: left; margin: 1px 2px 3px 0;  background: rgb(240, 240, 240); -moz-user-select: none; -webkit-user-select: none; user-select: none; clear: none; padding: 0; }
+div.wysiwyg ul.toolbar li.separator { background: none; width: 1px; height: 46px; margin: 2px 4px 0px 5px; border: none; border-left: 1px solid #ccc; }
+div.wysiwyg ul.toolbar li { text-indent: -5000px; display: block; width: 46px; height: 46px; background: url('toolbar.png') no-repeat -640px -800px; border: 1px solid transparent; cursor: pointer; margin: 2px; }
+div.wysiwyg ul.toolbar li.wysiwyg-button-hover { background-color: #f7f1c8; border: 1px solid #8f4237; }
+div.wysiwyg ul.toolbar li.disabled, div.wysiwyg ul.toolbar li.wysiwyg-button-hover.disabled, div.wysiwyg ul.toolbar li.active.disabled { opacity: 0.5; filter:alpha(opacity=50); border: 0px none transparent; padding: 1px; cursor: auto; }
+
+div.wysiwyg ul.toolbar li.bold { background-position: -489px -9px; }
+div.wysiwyg ul.toolbar li.italic { background-position: -585px -9px; }
+
+div.wysiwyg ul.toolbar li.indent { background-position: -681px -113px; }
+div.wysiwyg ul.toolbar li.outdent { background-position: -775px -113px; }
+
+div.wysiwyg ul.toolbar li.justifyLeft { background-position: -105px -9px; }
+div.wysiwyg ul.toolbar li.justifyCenter { background-position: -201px -9px; }
+div.wysiwyg ul.toolbar li.justifyRight { background-position: -301px -9px; }
+div.wysiwyg ul.toolbar li.justifyFull { background-position: -9px -9px; }
+
+div.wysiwyg ul.toolbar li.undo { background-position: -201px -113px; }
+div.wysiwyg ul.toolbar li.redo { background-position: -297px -113px; }
+
+div.wysiwyg ul.toolbar li.insertOrderedList { background-position: -9px -113px; }
+div.wysiwyg ul.toolbar li.insertUnorderedList { background-position: -105px -113px; }
+div.wysiwyg ul.toolbar li.insertHorizontalRule { background-position: -585px -113px; }
+
+div.wysiwyg ul.toolbar li.heading { background-position: -393px -9px; }
+div.wysiwyg ul.toolbar li.createLink { background-position: -393px -113px; }
+div.wysiwyg ul.toolbar li.insertImage { background-position: -489px -113px; }
+
+
+/* dialog */
+.wysiwyg-dialog { position:fixed; top:50px; left:50px; width:450px; height:300px; background:transparent; font:14px "Helvetic Neue", Helvetica,Arial,sans-serif; }
+.wysiwyg-dialog .wysiwyg-dialog-topbar { background:#333; border:1px #111 solid; color:white; padding:10px; position:relative; }
+.wysiwyg-dialog .wysiwyg-dialog-topbar .wysiwyg-dialog-close-wrapper .wysiwyg-dialog-close-button { color:white; text-decoration:none; display:block; padding:6px 10px; position:absolute; right:12px; top:50%; height:14px; margin-top:-12px; }
+.wysiwyg-dialog .wysiwyg-dialog-topbar .wysiwyg-dialog-close-wrapper a.wysiwyg-dialog-close-button:hover { background:#666; }
+.wysiwyg-dialog .wysiwyg-dialog-topbar .wysiwyg-dialog-title { font-size:20px; font-weight:bold; padding:5px; }
+.wysiwyg-dialog .wysiwyg-dialog-content { border:1px #ccc solid; border-top:0; padding:15px; background:white; }
+.wysiwyg-dialog-modal-div { position:absolute; top:0px; left:0px; width:100%; height:100%; background-color:rgb(255,255,255); background-color:rgba(0,0,0,0.5); filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000); -ms-filter:"progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";}
+.wysiwyg-dialog-content form.wysiwyg fieldset { border:1px #ccc solid; }
+.wysiwyg-dialog-content form.wysiwyg legend { padding:7px; }
+.wysiwyg-dialog-content form.wysiwyg .form-row { clear:both; padding:4px 0; }
+.wysiwyg-dialog-content form.wysiwyg .form-row label, .wysiwyg-dialog form.wysiwyg .form-row .form-row-key { display:block; float:left; width:35%; text-align:right; padding:4px 5px; }
+.wysiwyg-dialog-content form.wysiwyg .form-row .form-row-value { display:block; float:left; width:55%; }
+.wysiwyg-dialog-content form.wysiwyg .form-row input.width-auto { width:auto; }
+.wysiwyg-dialog-content form.wysiwyg input.width-small { width:50px; min-width:50px; max-width:50px; }
+.wysiwyg-dialog-content form.wysiwyg input, .wysiwyg-dialog form.wysiwyg select { padding:2px; width:100%; margin:2px; }
+.wysiwyg-dialog-content form.wysiwyg input[type=submit], .wysiwyg-dialog form.wysiwyg input[type=reset] { padding:2px 7px; width:auto; }
+.editor_iframe { width: 100%; min-height: 295px; }
+#hpop {position:absolute; display:none; width:200px; height:270px; z-index:100; background-color:#fff; border:1px solid #ccc;}
+#hpop li {cursor: pointer; padding: 5px 10px; border: 1px solid #fff;}
+.ui-dialog-titlebar { padding: 5px 10px; }
+.ui-dialog-titlebar-close { float: right; }
+.ui-dialog-content { position: relative; }
+#image_result .thumb_browse { width: 600px; height: auto; margin: 0 auto; padding: 15px 0; }
+#image_result .thumb_browse tr { width: 98px; border-collapse:separate; border-spacing:10px; }
+#image_result .thumb_browse td { border: 2px solid #fff; text-align: center; vertical-align: middle; }
+#image_result .thumb_browse td div.frame {
+	position: relative;
+	line-height: 80px;
+	width: 80px;
+	margin:0 auto;
+}
+div#image_result .thumb_browse td div.crop {
+	cursor: pointer;
+	height: 70px;
+	line-height: 70px;
+	width: 70px;
+	overflow: hidden;
+	margin: 5px;
+	background-color: #f5f5f5;
+	border-radius: 3px 3px 3px 3px;
+	box-shadow:0 1px 5px 0 rgba(0, 0, 0, 0.24);
+}
+div#image_result .thumb_browse td div span.remove {
+	position: absolute;
+	top:-10px;
+	right:-7px;
+	height: 13px;
+	width: 13px;
+	font-size:13px;
+	line-height: 13px;
+	color:#999;
+	cursor: pointer;
+	z-index:100;
+}
+div#image_result .thumb_browse td div span:hover { color: #8F4237; }
+div#image_result .thumb_browse td img { vertical-align: middle; margin-top: -3px; cursor: pointer; }
+.ui-dialog-content .browse_nav { position: absolute; bottom: 30px; left: 20px; width: 600px; }
+.ui-dialog-content .browse_nav .upload { float: left; }
+.ui-dialog-content .browse_nav .nav {  float: right; }
