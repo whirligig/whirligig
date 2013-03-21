@@ -32,6 +32,8 @@ import http
 import files
 import router
 
+from signal import signal, SIGTERM
+
 DEBUG = True
 
 BAD_REQUEST = (400, 'Bad Request')
@@ -403,31 +405,122 @@ class Connection(asyncore.dispatcher):
         return (len(self.buffer_out) > 0)
 
 #
-# main channel for listening port
+# main channel
 #
 class WebServer(asyncore.dispatcher):
 
     handlerClass = Connection
 
-    def __init__(self, router, host='localhost', port=10000):
+    def __init__(self, router, host, port):
+        asyncore.dispatcher.__init__(self)
         self.router = router
         self.host = host
         self.port = port
-        asyncore.dispatcher.__init__(self)
+
+        self.stdin = '/dev/null'
+        self.stdout = os.path.join(core.ROOT, 'var/messages.log')
+        self.stderr = os.path.join(core.ROOT, 'var/errors.log')
+        self.pidfile = os.path.join(core.ROOT, 'var/whriligig.pid')
+
+    def daemonize(self):
+
+        def _clear(signum, stack_frame):
+            #remove pidfile
+            if os.path.exists(self.pidfile):
+                os.remove(self.pidfile)
+
+            sys.exit(0)
+
+        try:
+            pid = os.fork()
+            if pid > 0:
+                # exit first parent
+                sys.exit(0)
+        except OSError, e:
+            sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
+            sys.exit(1)
+
+        # decouple from parent environment
+        os.chdir("/")
+        os.setsid()
+        os.umask(0)
+
+        # do second fork
+        try:
+            pid = os.fork()
+            if pid > 0:
+                # exit from second parent
+                sys.exit(0)
+        except OSError, e:
+            sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
+            sys.exit(1)
+
+        # redirect standard file descriptors
+        sys.stdout.flush()
+        sys.stderr.flush()
+        si = file(self.stdin, 'r')
+        so = file(self.stdout, 'a+')
+        se = file(self.stderr, 'a+', 0)
+        os.dup2(si.fileno(), sys.stdin.fileno())
+        os.dup2(so.fileno(), sys.stdout.fileno())
+        os.dup2(se.fileno(), sys.stderr.fileno())
+
+        # write pidfile
+        signal(SIGTERM, _clear)
+        pid = str(os.getpid())
+        file(self.pidfile,'w+').write("%s\n" % pid)
+
+    def start(self):
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.set_reuse_addr()
         try:
             self.bind((self.host, self.port))
         except socket.error:
-            print "Unable bind socket to host:port"
-            exit(1)
+            sys.stderr.write("Unable bind socket to %s:%s\n" % (self.host, self.port))
+            sys.exit(1)
+
         self.listen(500)
 
+        # Check for a pidfile to see if the daemon already runs
+        try:
+            pf = file(self.pidfile,'r')
+            pid = int(pf.read().strip())
+            pf.close()
+        except IOError:
+            pid = None
 
-    def run(self, use_poll=True):
-        print "Whirligig running on %s:%s..." % (self.host, self.port)
-        asyncore.loop(use_poll=use_poll, timeout=0.1)
+        if pid:
+            message = "pidfile %s already exist. Daemon already running?\n"
+            sys.stderr.write(message % self.pidfile)
+            sys.exit(1)
 
+        # Start the daemon
+        self.daemonize()
+        asyncore.loop(use_poll=True, timeout=0.1)
+
+    def stop(self):
+        # Get the pid from the pidfile
+        try:
+            pf = file(self.pidfile,'r')
+            pid = int(pf.read().strip())
+            pf.close()
+        except IOError:
+            pid = None
+
+        if not pid:
+            print "pidfile '%s' is not found. Daemon not running?" % self.pidfile
+            return
+
+        # Try killing the daemon process       
+        try:
+            while 1:
+                os.kill(pid, SIGTERM)
+                time.sleep(0.1)
+        except OSError, err:
+            err = str(err)
+            if err.find("No such process") < 0:
+                sys.stderr.write(str(err))
+                sys.exit(1)
 
     def handle_accept(self):
         pair = self.accept()
@@ -435,18 +528,40 @@ class WebServer(asyncore.dispatcher):
             conn_sock, client_address = pair
             self.handlerClass(conn_sock, self.router)
 
-
     def handle_close(self):
         self.close()
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2:
-        host = sys.argv[1]
-        port = int(sys.argv[2])
-    else:
-        host = '127.0.0.1'
-        port = 10000
 
-    ws = WebServer(router.router, host=host, port=port)
-    ws.run(use_poll=True)
+    syntax = "syntax: python server.py [start|stop] [host] [port]"
+
+    args = len(sys.argv)
+
+    if args < 2:
+        print
+        print syntax
+        print
+        exit(0)
+
+    host = '127.0.0.1'
+    port = 10000
+
+    if args > 1:
+        action = sys.argv[1]
+    if args > 2:
+        host = sys.argv[2]
+    if args > 3:
+        try:
+            port = int(sys.argv[3])
+        except ValueError:
+            print 'Invalid argument "port"'
+            exit(0)
+
+    ws = WebServer(router.router, host, port)
+
+    if action == 'start':
+        ws.start()
+
+    if action == 'stop':
+        ws.stop()
