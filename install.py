@@ -51,7 +51,9 @@ config.done()
 auth = AuthManager()
 auth.install()
 password = auth.create_auth(username=u'manager')
-print 'Created auth. Password:', password
+print 'Created auth.'
+print 'Username: manager'
+print 'Password:', password
 auth.done()
 
 nav = NavigationManager()

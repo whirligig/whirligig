@@ -1,5 +1,3 @@
-{# import manager_nav #}
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,18 +22,16 @@
 </head>
 
 <body>
-<!--  <div id="wrapper"> -->
-  	<div id="container">
-    	<div id="header" class="block"><span id="site_title">{{ SITENAME }}</span><span id="manager_title"><a href="{{ MANAGER_URL }}">Manager panel</a></span><div id="manager-nav">{{ manager_nav(request) }}</div></div>
-    	<div id="content" class="clearfix">
-        <div id="notificator"></div>
-        {% block content %}{% endblock %}
-      </div>
+  <div id="container">
+    <div id="header" class="block"><span id="site_title">{{ SITENAME }}</span><span id="manager_title"><a href="{{ MANAGER_URL }}">Manager panel</a></span><div id="manager-nav">{{ manager_nav(request) }}</div></div>
+    <div id="content" class="clearfix">
+      <div id="notificator"></div>
+      {% block content %}{% endblock %}
     </div>
-    <footer>
-      <div id="develop-date">2013</div>
-    </footer>
-<!--  </div>-->
-<div id="overlay" class="hide"></div>
+  </div>
+  <footer>
+    <div id="develop-date">2013</div>
+  </footer>
+  <div id="overlay" class="hide"></div>
 </body>
 </html>

@@ -1,4 +1,6 @@
 *.py[cod]
+*.sqlite
+var/cache/
 
 # C extensions
 *.so
