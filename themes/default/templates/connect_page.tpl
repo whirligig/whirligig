@@ -7,9 +7,10 @@
 {% block content %}
 <h1>Connect with us</h1>
 {% if success %}
-	<div>Thank you! Message has been sent.</div>
-{% else %}
-	{% if error %}<div>{{ error }}</div>{% endif %}
+	<div class="connect-message">Thank you! Message has been sent.</div>
+{% endif %}
+{% if success|is_none %}
+	{% if error %}<div class="connect-error">{{ error }}</div>{% endif %}
 	{{ connect_form() }}
 {% endif %}
 

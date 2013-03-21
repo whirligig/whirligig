@@ -1510,6 +1510,7 @@ def connect_page_post(request):
         return http.html_page(template, context, request)
 
     config_manager = core.ConfigManager()
+    sitename = config_manager.get('sitename')
     host = config_manager.get('smtp_host')
     port = config_manager.get('smtp_port')
     login = config_manager.get('smtp_login')
@@ -1540,8 +1541,15 @@ def connect_page_post(request):
 
         return http.html_page(template, context, request)
 
+    message_with_headers = """From: %s <%s>
+To: %s
+Subject: %s: Message
+
+%s
+""" % (sender, from_email, to_email, sitename, message)
+
     try:
-        s.sendmail(from_email, to_email, message)
+        s.sendmail(from_email, to_email, message_with_headers)
     except:
 
         context = {
