@@ -892,8 +892,8 @@ def static_layout(request):
     if action == 'load':
         name = variables.get('name', None)
         if name:
-            tpl_template = "./themes/%s/layouts/static_%s.tpl"
-            tpl_name = tpl_template % (core.THEME, name.replace(' ', '_'))
+            tpl_template = "%s/themes/%s/layouts/static_%s.tpl"
+            tpl_name = tpl_template % (core.ROOT, core.THEME, name.replace(' ', '_'))
 
             if os.path.isfile(tpl_name):
                 f = open(tpl_name, 'r+b')

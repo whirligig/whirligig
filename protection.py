@@ -41,8 +41,6 @@ def set_server_token():
         (current > created + flood_protection_max_time):
             del flood_protection_buffer[token]
 
-    print flood_protection_buffer.__len__(), flood_protection_buffer_size
-
     if flood_protection_buffer.__len__() > flood_protection_buffer_size:
         return None
 
