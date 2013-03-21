@@ -12,11 +12,9 @@
   <link rel="stylesheet" type="text/css" href="{{ MANAGER_URL }}static/jquery.wysiwyg.css" media="all" />
   <link rel="stylesheet" type="text/css" href="{{ MANAGER_URL }}static/jquery.ui.all.css" media="all" />
 
-<!--  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script> -->
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.js"></script>
 {% block extra_head %}{% endblock %}
-
-  <script type="text/javascript" src="{{ MANAGER_URL }}static/jquery.min.js"></script>
-  <script type="text/javascript" src="{{ MANAGER_URL }}static/jquery.ui.min.js"></script>
   <script type="text/javascript" src="{{ MANAGER_URL }}static/jquery.json.js"></script>
   <script type="text/javascript" src="{{ MANAGER_URL }}static/jquery.color.js"></script>
   <script type="text/javascript" src="{{ MANAGER_URL }}static/jquery.form.js"></script>
