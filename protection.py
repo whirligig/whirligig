@@ -16,7 +16,7 @@
 #    along with Whirliglg.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-# flood protection tokens
+# flood protection tokens, authentication
 #
 import time
 import random
@@ -24,7 +24,7 @@ import Cookie
 import core
 
 flood_protection_buffer = {}
-flood_protection_buffer_size = 1000     #1000 tokens
+flood_protection_buffer_size = 1000     # 1000 tokens
 flood_protection_min_time = 5           # 5 sec
 flood_protection_max_time = 120         # 120 sec
 
@@ -40,6 +40,8 @@ def set_server_token():
         if (current < created + flood_protection_min_time) or \
         (current > created + flood_protection_max_time):
             del flood_protection_buffer[token]
+
+    print flood_protection_buffer.__len__(), flood_protection_buffer_size
 
     if flood_protection_buffer.__len__() > flood_protection_buffer_size:
         return None

@@ -1682,7 +1682,6 @@ def catalog_item_page(request, item):
 def static_page(request, name):
     template = 'static_page.tpl'
 
-    name = name#.decode('utf-8')
     pages = core.PageManager()
     page = pages.show(name)
     pages.done()

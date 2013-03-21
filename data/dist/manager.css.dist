@@ -254,7 +254,13 @@ input.form-text:focus, textarea:focus, select:focus {
 	text-align: center;
 }
 
-/* dashboard*/
+/* login page */
+#login-table {
+	width: 350px;
+	margin: 80px auto;
+}
+
+/* dashboard */
 table.dashboard .sitemap {
 	text-align: center;
 	padding: 20px 0;
