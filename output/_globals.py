@@ -233,7 +233,7 @@ def items_table(catalog, page):
             o += row % (
                 'odd' if i & 1 else 'even',
                 ' h' if item[-3][1] == 0 else '',
-                item[0][1], _filters.get_main_mini_image(item[2][1]),
+                item[0][1], _filters.get_mini_image(_filters.main_image(item)),
                 item[3][1], 'Show' if item[-3][1] == 0 else 'Hide'
             )
     else:

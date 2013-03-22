@@ -377,15 +377,6 @@ def get_mini_image(image_path):
     return thumbnail_url
 
 
-def get_main_mini_image(str):
-    try:
-        str = json.loads(str)
-        url = str['main']
-    except:
-        return '%sstatic/no-image-70.png' % core.MANAGER_URL
-    return get_mini_image(url)
-
-
 def get_small_image(image_path):
     thumbnail_url = get_thumbnail_url(image_path, IMAGE_SIZE['SMALL'])
     if thumbnail_url is None:

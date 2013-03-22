@@ -90,9 +90,11 @@ def main_image(item):
         return None
 
     if isinstance(item[2][1], basestring):
-        return json.loads(item[2][1])['main']
+        d = json.loads(item[2][1])
+        return d['main'] if 'main' in d else ''
 
-    return item[2][1]['main']
+    d = item[2][1]
+    return d['main'] if 'main' in d else ''
 
 def extra_images(item, num=None):
     if not item:
@@ -128,9 +130,6 @@ def get_big_image(s):
 def get_original_image(s):
     return files.get_original_url(s)
 
-def get_main_mini_image(s):
-    return files.get_main_mini_image(s)
-
 
 filterCollection = {
     'length': length,
@@ -153,6 +152,5 @@ filterCollection = {
     'get_small_image': get_small_image,
     'get_medium_image': get_medium_image,
     'get_big_image': get_big_image,
-    'get_original_image': get_original_image,
-    'get_main_mini_image': get_main_mini_image
+    'get_original_image': get_original_image
 }
