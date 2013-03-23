@@ -36,19 +36,6 @@ from signal import signal, SIGTERM
 
 DEBUG = True
 
-BAD_REQUEST = (400, 'Bad Request')
-FORBIDDEN = (403, 'Forbidden')
-NOT_FOUND = (404, 'Not Found')
-NOT_ALLOWED = (405, 'Method Not Allowed')
-LENGTH_REQUIRED = (411, 'Length Required')
-ENTITY_TOO_LARGE = (413, 'Request Entity Too Large')
-INTERNAL_ERROR = (500, 'Internal Error')
-
-
-MANAGER_STATIC_PATH = '%s/manager/static/' % core.ROOT
-THEME_STATIC_PATH = '%s/themes/%s/static/' % (core.ROOT, core.THEME)
-
-
 ALLOWED_UPLOAD_URIS = (
     '%supload/' % core.MANAGER_URL,
     '%ssettings/' % core.MANAGER_URL,
@@ -69,6 +56,7 @@ class Connection(asyncore.dispatcher):
     send_block_size = 1024
 
     # max.size http-headers (bytes)
+    # <= recv_block_size
     max_headers_size = 512
 
     # max.size http-data for unauth clients (bytes)
@@ -96,54 +84,9 @@ class Connection(asyncore.dispatcher):
 
         self.http_data_size = -1
         self.temp_file = None
+        self.error = 0
         # request_line - (method, uri, version)
         self.request_line = [None, None, None]
-
-
-    #
-    # get directory on local filesystem by request url
-    #
-    def get_static_path(self, uri):
-        root = None
-        filename = os.path.basename(uri)
-        if uri == '/sitemap.xml' or uri == '/robots.txt':
-            root = core.VAR_ROOT
-        elif uri == '/static/commons.css':
-            root = MANAGER_STATIC_PATH
-        elif uri == '/static/core.js':
-            root = MANAGER_STATIC_PATH
-        elif uri.startswith('/static/pirobox/'):
-            root = MANAGER_STATIC_PATH + 'pirobox/'
-        elif uri.startswith(core.MANAGER_URL + 'static/'):
-            root = MANAGER_STATIC_PATH
-        elif uri.startswith('/static/'):
-            root = THEME_STATIC_PATH
-        elif uri.startswith('/uploads/'):
-            root = files.UPLOAD_BASE_PATH
-            filename = uri.split('/uploads/', 1)[1]
-        elif root is None:
-            return root, filename
-
-        # security check
-        path = '%s/%s' % (root, filename)
-        if not os.path.abspath(path).replace('\\', '/').startswith(root):
-            root = filename = None
-        return root, filename
-
-
-    #
-    # get file content
-    #
-    def get_file(self, root, filename):
-        content = None
-        path = os.path.abspath('%s/%s' % (root, filename))
-        try:
-            f = open(path, 'r+b')
-        except:
-            return None
-
-        content = f.read()
-        return content
 
 
     #
@@ -189,7 +132,8 @@ class Connection(asyncore.dispatcher):
             lines = headers.splitlines()
             raw_req_line = lines[0].split()
             if len(raw_req_line) != 3:
-                self.buffer_out = http.error(*BAD_REQUEST)
+                self.error = 400
+                self.buffer_out = http.error(self.error)
                 return 'error'
 
             self.request_line = tuple(raw_req_line)
@@ -200,7 +144,8 @@ class Connection(asyncore.dispatcher):
             return 'done'
 
         if self.http_headers_size > self.max_headers_size:
-            self.buffer_out = http.error(*ENTITY_TOO_LARGE)
+            self.error = 413
+            self.buffer_out = http.error(self.error)
             return 'error'
 
         self.incoming = self.incoming + bytes
@@ -235,11 +180,7 @@ class Connection(asyncore.dispatcher):
         # get http-headers
         if not self.http_headers:
             result = self._recv_headers(bytes)
-            if result == 'error':
-                # error. send response to client
-                self.buffer_out = result
-                return
-            if result == 'recv':
+            if result != 'done':
                 # http headers are not recieved
                 return
         else:
@@ -254,7 +195,8 @@ class Connection(asyncore.dispatcher):
         variables = dict(parse_qsl(parts[1])) if parts.__len__() > 1 else {}
 
         if request_method not in ('GET', 'POST'):
-            self.buffer_out = http.error(*NOT_ALLOWED)
+            self.error = 405
+            self.buffer_out = http.error(self.error)
             return
 
         headers = []
@@ -264,14 +206,21 @@ class Connection(asyncore.dispatcher):
         if request_uri[-4:] in static_exts or \
            request_uri[-3:]  == '.js' or request_uri[-5:] == '.jpeg':
 
-            root, filename = self.get_static_path(request_uri)
-            if root is None:
-                self.buffer_out = http.error(*NOT_FOUND)
+            if request_method == 'POST':
+                self.error = 405
+                self.buffer_out = http.error(self.error)
                 return
 
-            content = self.get_file(root, filename)
+            root, filename = files.get_static_path(request_uri)
+            if root is None:
+                self.error = 404
+                self.buffer_out = http.error(self.error)
+                return
+
+            content = files.get_file(root, filename)
             if content is None:
-                self.buffer_out = http.error(*NOT_FOUND)
+                self.error = 404
+                self.buffer_out = http.error(self.error)
                 return
 
             # add MIME type to headers
@@ -296,12 +245,45 @@ class Connection(asyncore.dispatcher):
             self.buffer_out = http.response(200, "OK", headers, content)
             return
 
+        # check request url in router
+        found = False
+        for line in self.router:
+
+            uri = line[0]
+            functions = line[1]
+            cachable = line[2]
+            response = ''
+
+            m = re.match(uri, request_uri)
+
+            if m:
+                if request_method == 'GET' and functions[0]:
+                    found = True
+                    function = functions[0]
+                    break
+
+                if request_method == 'POST' and functions[1]:
+                    found = True
+                    function = functions[1]
+                    break
+
+                self.error = 405
+                self.buffer_out =  http.error(self.error)
+                return
+
+        if not found:
+            self.error = 404
+            self.buffer_out =  http.error(self.error)
+            return
+
+        # POST request
         if request_method == 'POST':
             try:
                 content_length = int(http.get_header(self.http_headers, \
                     'Content-Length'))
             except (ValueError, TypeError):
-                self.buffer_out = http.error(*LENGTH_REQUIRED)
+                self.error = 411
+                self.buffer_out = http.error(self.error)
                 return
 
             # unauth zone request
@@ -309,7 +291,8 @@ class Connection(asyncore.dispatcher):
             request_uri == '%slogin/' % core.MANAGER_URL:
                 # check POST restrictions
                 if content_length > self.max_unauth_data:
-                    self.buffer_out = http.error(*ENTITY_TOO_LARGE)
+                    self.error = 413
+                    self.buffer_out = http.error(self.error)
                     return
 
             # recieve POST data
@@ -325,7 +308,8 @@ class Connection(asyncore.dispatcher):
                 # check valid token
                 if 'token' not in variables.iterkeys() or \
                 not protection.valid_client_token(variables['token']):
-                    self.buffer_out = http.error(*FORBIDDEN)
+                    self.error = 403
+                    self.buffer_out = http.error(self.error)
                     return
 
         # check for upload file progress request
@@ -335,58 +319,54 @@ class Connection(asyncore.dispatcher):
             self.buffer_out = http.json_data(response)
             return
 
-        # get request line and search in router
-        for line in self.router:
+        need_generate_response = False
+        need_cache = False
 
-            uri = line[0]
-            methods = line[1]
-            function = line[2]
-            response = ''
+        # check cache for existing item
+        if request_method == 'GET' and cachable:
+            response = self.cache.get(request_uri)
 
-            m = re.match(uri, request_uri)
+            if not response:
+                need_generate_response = True
+                need_cache = True
 
-            if m and request_method in methods:
+        if request_method == 'GET' and not cachable:
+            need_generate_response = True
+            need_cache = False
 
-                # check cache for existing item
-                if request_method != 'POST' and \
-                not request_uri.startswith(core.MANAGER_URL) and \
-                request_uri != '/connect/':
-                    response = self.cache.get(request_uri)
+        # POST requests are not cachable
+        if request_method == 'POST':
+            need_generate_response = True
+            need_cache = False
 
-                if not response:
-                    # generate response by function
-                    parameters = m.groups()
+        if need_generate_response:
+            # generate response by function
+            parameters = m.groups()
 
-                    request = {
-                        'method': request_method,
-                        'path': request_uri,
-                        'headers': self.http_headers,
-                        'variables': variables,
-                        'files': None
-                    }
+            request = {
+                'method': request_method,
+                'path': request_uri,
+                'headers': self.http_headers,
+                'variables': variables,
+                'files': None
+            }
 
-                    if DEBUG:
-                        response = function(request, *parameters)
-                    else:
-                        try:
-                            response = function(request, *parameters)
-                        except:
-                            self.buffer_out =  http.error(*INTERNAL_ERROR)
-                            return
+            if DEBUG:
+                response = function(request, *parameters)
+            else:
+                try:
+                    response = function(request, *parameters)
+                except:
+                    self.error = 500
+                    self.buffer_out =  http.error(self.error)
+                    return
 
-                    # add to cache
-                    if request_method != 'POST' and \
-                    not request_uri.startswith(core.MANAGER_URL) and \
-                    request_uri != '/connect/':
-                        self.cache.set(request_uri, response)
+        if need_cache:
+            # add to cache
+            self.cache.set(request_uri, response)
 
-                # copy to buffer
-                self.buffer_out = response
-                return
-
-        # send to client 404 error
-        # (request uri is not found in router)
-        self.buffer_out =  http.error(*NOT_FOUND)
+        # copy to buffer
+        self.buffer_out = response
         return
 
 
@@ -399,6 +379,12 @@ class Connection(asyncore.dispatcher):
 
     def handle_close(self):
         self.close()
+
+
+    def readable(self):
+        if self.error:
+            return False
+        return True
 
 
     def writable(self):

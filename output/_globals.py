@@ -36,6 +36,13 @@ variableCollection = {
     'CONNECT_ENABLED': core.CONNECT_ENABLED
 }
 
+def is_auth(request):
+    auth = protection.CookieAuthenticator()
+    if auth.valid_auth(request['headers']):
+        return True
+
+    return False
+
 
 def inc(i1, i2=1):
     return i1 + i2
@@ -104,7 +111,7 @@ def not_equal(left, right):
 
 
 def manager_nav(request):
-    o = '<ul>'
+    o = '<ul class="menu manager-menu">'
     o += '<li %s><a href="%s">Dashboard</a></li>' % (
         'class="active"' if request.get('path', '') == core.MANAGER_URL else '',
         core.MANAGER_URL

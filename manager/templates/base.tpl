@@ -23,7 +23,11 @@
 
 <body>
   <div id="container">
-    <div id="header" class="block"><span id="site_title">{{ SITENAME }}</span><span id="manager_title"><a href="{{ MANAGER_URL }}">Manager panel</a></span><div id="manager-nav">{{ manager_nav(request) }}</div></div>
+    <div id="header" class="block">
+      <span id="site_title">{{ SITENAME }}</span>
+      <span id="manager_title"><a href="{{ MANAGER_URL }}">Manager panel</a></span>
+      {% if is_auth(request) %}<div id="manager-nav">{{ manager_nav(request) }}</div>{% endif %}
+    </div>
     <div id="content" class="clearfix">
       <div id="notificator"></div>
       {% block content %}{% endblock %}

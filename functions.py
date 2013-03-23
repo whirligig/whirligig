@@ -102,15 +102,6 @@ def manager_config_post(request):
     config_manager = core.ConfigManager()
     config_manager.set('sitename', sitename)
 
-#    if logo:
-#        saved_logo = files.save_logo(logo)
-    #     uploaded.done()
-    #     if saved_image:
-    #         logo_url = files.get_mini_image(saved_image)
-    #         config_manager.set(u'logo', logo_url)
-    # else:
-    #     config_manager.set(u'logo', 'logo.png')
-
     config_manager.set('short_description', short_description)
     config_manager.set('description', description)
     config_manager.set('keywords', keywords)
@@ -1478,7 +1469,7 @@ def connect_page(request):
     template = 'connect_page.tpl'
 
     if not core.CONNECT_ENABLED:
-        return http.error(404, "Not Found")
+        return http.error(404)
 
     context = {
         'success': '',
@@ -1492,7 +1483,7 @@ def connect_page_post(request):
     template = 'connect_page.tpl'
 
     if not core.CONNECT_ENABLED:
-        return http.error(404, "Not Found")
+        return http.error(404)
 
     variables = request['variables']
 
@@ -1626,13 +1617,13 @@ def catalog_page(request):
     template = 'catalog_page.tpl'
 
     if not core.CATALOG_ENABLED:
-        return http.error(404, "Not Found")
+        return http.error(404)
 
     catalog_manager = core.CatalogManager()
 
     if not catalog_manager.exist():
         catalog_manager.done()
-        return http.error(404, "Not Found")
+        return http.error(404)
 
     catalog = catalog_manager.browse()
     catalog_manager.done()
@@ -1648,13 +1639,13 @@ def catalog_category_page(request, pk):
     template = 'catalog_category_page.tpl'
 
     if not core.CATALOG_ENABLED:
-        return http.error(404, "Not Found")
+        return http.error(404)
 
     catalog_manager = core.CatalogManager()
     category = catalog_manager.get_category(int(pk))
     if category is False:
         catalog_manager.done()
-        return http.error(404, "Not Found")
+        return http.error(404)
 
     catalog = catalog_manager.browse(category=pk)
     catalog_manager.done()
@@ -1670,13 +1661,13 @@ def catalog_item_page(request, item):
     template = 'catalog_item_page.tpl'
 
     if not core.CATALOG_ENABLED:
-        return http.error(404, "Not Found")
+        return http.error(404)
 
     catalog_manager = core.CatalogManager()
     item = catalog_manager.get_item(int(item))
     if item is False:
         catalog_manager.done()
-        return http.error(404, "Not Found")
+        return http.error(404)
 
     catalog_manager.done()
 
@@ -1694,7 +1685,7 @@ def static_page(request, name):
     page = pages.show(name)
     pages.done()
     if page is None:
-        return http.error(404, "Not Found")
+        return http.error(404)
 
     content = {}
     content['name'] = page[1]

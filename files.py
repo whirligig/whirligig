@@ -22,6 +22,53 @@ import shutil
 import http
 import core
 
+MANAGER_STATIC_PATH = '%s/manager/static/' % core.ROOT
+THEME_STATIC_PATH = '%s/themes/%s/static/' % (core.ROOT, core.THEME)
+
+#
+# get directory on local filesystem by request url
+#
+def get_static_path(uri):
+    root = None
+    filename = os.path.basename(uri)
+    if uri == '/sitemap.xml' or uri == '/robots.txt':
+        root = core.VAR_ROOT
+    elif uri == '/static/commons.css':
+        root = MANAGER_STATIC_PATH
+    elif uri == '/static/core.js':
+        root = MANAGER_STATIC_PATH
+    elif uri.startswith('/static/pirobox/'):
+        root = MANAGER_STATIC_PATH + 'pirobox/'
+    elif uri.startswith(core.MANAGER_URL + 'static/'):
+        root = MANAGER_STATIC_PATH
+    elif uri.startswith('/static/'):
+        root = THEME_STATIC_PATH
+    elif uri.startswith('/uploads/'):
+        root = files.UPLOAD_BASE_PATH
+        filename = uri.split('/uploads/', 1)[1]
+    elif root is None:
+        return root, filename
+
+    # security check
+    path = '%s/%s' % (root, filename)
+    if not os.path.abspath(path).replace('\\', '/').startswith(root):
+        root = filename = None
+    return root, filename
+
+
+#
+# get file content
+#
+def get_file(root, filename):
+    content = None
+    path = os.path.abspath('%s/%s' % (root, filename))
+    try:
+        f = open(path, 'r+b')
+    except:
+        return None
+
+    content = f.read()
+    return content
 
 #
 # objects stores files in directory for fast response to clients

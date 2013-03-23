@@ -19,150 +19,218 @@ import core
 import functions
 
 #
-# URLs are hardcode (used by srever.py, seo.py, functions.py, js files, ...)
+# URLs are hardcode (used by server.py, seo.py, functions.py, js files, ...)
+# (URL, (GET_handler, POST_handler), cachable)
 #
 router = (
-    (r'^/$', ('GET',), 
-        functions.index_page),
+    (r'^/$', (functions.index_page, None), 1),
+    (r'^%s$' % core.MANAGER_URL, (functions.manager_page, None), 0),
 
-    (r'^%s$' % core.MANAGER_URL, ('GET',), 
-        functions.manager_page),
+    (r'^%slogin/$' % core.MANAGER_URL, (
+        functions.login_page, # GET
+        functions.login_page  # POST
+    ), 0),
 
-    (r'^%slogin/$' % core.MANAGER_URL, ('GET', 'POST'), 
-        functions.login_page),
+    (r'^%slogout/$' % core.MANAGER_URL, (
+        functions.logout_page,
+        None
+    ), 0),
 
-    (r'^%slogout/$' % core.MANAGER_URL, ('GET',), 
-        functions.logout_page),
+    (r'^%ssettings/$' % core.MANAGER_URL, (
+        functions.manager_config,
+        functions.manager_config_post
+    ), 0),
 
-    (r'^%ssettings/$' % core.MANAGER_URL, ('GET',), 
-        functions.manager_config),
+    (r'^%ssettings/logo/clear/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_config_logo_delete
+    ), 0),
 
-    (r'^%ssettings/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_config_post),
+    (r'^%sseo/sitemap/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_seo_sitemap
+    ), 0),
 
-    (r'^%ssettings/logo/clear/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_config_logo_delete),
+    (r'^%snav/$' % core.MANAGER_URL, (
+        functions.manager_navigation_list,
+        functions.manager_navigation_create
+    ), 0),
 
-    (r'^%sseo/sitemap/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_seo_sitemap),
+    (r'^%snav/update/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_navigation_update
+    ), 0),
 
-    (r'^%snav/$' % core.MANAGER_URL, ('GET',), 
-        functions.manager_navigation_list),
+    (r'^%snav/(?P<pk>\d+)/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_navigation_edit
+    ), 0),
 
-    (r'^%snav/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_navigation_create),
+    (r'^%snav/remove/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_navigation_remove
+    ), 0),
 
-    (r'^%snav/update/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_navigation_update),
+    (r'^%spage/$' % core.MANAGER_URL, (
+        functions.static_pages_redirect,
+        None
+    ), 0),
 
-    (r'^%snav/(?P<pk>\d+)/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_navigation_edit),
+    (r'^%spage/$' % core.MANAGER_URL, (
+        None,
+        functions.static_page_edit
+    ), 0),
 
-    (r'^%snav/remove/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_navigation_remove),
+    (r'^%spage/save/$' % core.MANAGER_URL, (
+        None,
+        functions.static_page_save
+    ), 0),
 
-    (r'^%spage/$' % core.MANAGER_URL, ('GET',), 
-        functions.static_pages_redirect),
+    (r'^%spage/delete/$' % core.MANAGER_URL, (
+        None,
+        functions.static_page_delete
+    ), 0),
 
-    (r'^%spage/$' % core.MANAGER_URL, ('POST',), 
-        functions.static_page_edit),
+    (r'^%spage/preview/$' % core.MANAGER_URL, (
+        None,
+        functions.static_page_preview
+    ), 0),
 
-    (r'^%spage/save/$' % core.MANAGER_URL, ('POST',), 
-        functions.static_page_save),
+    (r'^%spages/$' % core.MANAGER_URL, (
+        functions.static_page_list,
+        None
+    ), 0),
 
-    (r'^%spage/delete/$' % core.MANAGER_URL, ('POST',), 
-        functions.static_page_delete),
+    (r'^%spages/layout/$' % core.MANAGER_URL, (
+        None,
+        functions.static_layout
+    ), 0),
 
-    (r'^%spage/preview/$' % core.MANAGER_URL, ('POST',), 
-        functions.static_page_preview),
+    (r'^%spages/url/$' % core.MANAGER_URL, (
+        None,
+        functions.static_pages_url
+    ), 0),
 
-    (r'^%spages/$' % core.MANAGER_URL, ('GET',), 
-        functions.static_page_list),
+    (r'^%scatalog/$' % core.MANAGER_URL, (
+        functions.manager_catalog,
+        None
+    ), 0),
 
-    (r'^%spages/layout/$' % core.MANAGER_URL, ('POST',), 
-        functions.static_layout),
+    (r'^%scatalog/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_catalog_listing
+    ), 0),
 
-    (r'^%spages/url/$' % core.MANAGER_URL, ('POST',), 
-        functions.static_pages_url),
+    (r'^%scatalog/category/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_catalog_category_action
+    ), 0),
 
-    (r'^%scatalog/$' % core.MANAGER_URL, ('GET',), 
-        functions.manager_catalog),
+    (r'^%scatalog/prepare/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_catalog_wizard_start
+    ), 0),
 
-    (r'^%scatalog/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_catalog_listing),
+    (r'^%scatalog/create/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_catalog_wizard_end
+    ), 0),
 
-    (r'^%scatalog/category/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_catalog_category_action),
+    (r'^%scatalog/add/$' % core.MANAGER_URL, (
+        functions.manager_catalog_add,
+        None
+    ), 0),
 
-    (r'^%scatalog/prepare/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_catalog_wizard_start),
+    (r'^%scatalog/add/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_catalog_add_data
+    ), 0),
 
-    (r'^%scatalog/create/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_catalog_wizard_end),
+    (r'^%scatalog/add/(?P<category>\d+)/$' % core.MANAGER_URL, (
+        functions.manager_catalog_add_to_category,
+        None
+    ), 0),
 
-    (r'^%scatalog/add/$' % core.MANAGER_URL, ('GET',), 
-        functions.manager_catalog_add),
+    (r'^%scatalog/add/(?P<category>\d+)/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_catalog_add_to_category_post
+    ), 0),
 
-    (r'^%scatalog/add/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_catalog_add_data),
+    (r'^%scatalog/edit/$' % core.MANAGER_URL, (
+        functions.manager_catalog_edit,
+        None
+    ), 0),
 
-    (r'^%scatalog/add/(?P<category>\d+)/$' % core.MANAGER_URL, ('GET',), 
-        functions.manager_catalog_add_to_category),
+    (r'^%scatalog/edit/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_catalog_edit_data
+    ), 0),
 
-    (r'^%scatalog/add/(?P<category>\d+)/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_catalog_add_to_category_post),
+    (r'^%scatalog/activate/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_catalog_activate
+    ), 0),
 
-    (r'^%scatalog/edit/$' % core.MANAGER_URL, ('GET',), 
-        functions.manager_catalog_edit),
+    (r'^%scatalog/delete/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_catalog_delete
+    ), 0),
 
-    (r'^%scatalog/edit/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_catalog_edit_data),
+    (r'^%scatalog/import/$' % core.MANAGER_URL, (
+        functions.manager_catalog_import,
+        None
+    ), 0),
 
-    (r'^%scatalog/activate/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_catalog_activate),
+    (r'^%scatalog/upload/$' % core.MANAGER_URL, (
+        None,
+        functions.manager_catalog_image_upload
+    ), 0),
 
-    (r'^%scatalog/delete/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_catalog_delete),
+    (r'^%suploaded/remove/$' % core.MANAGER_URL, (
+        None,
+        functions.remove_uploaded_image
+    ), 0),
 
-    (r'^%scatalog/import/$' % core.MANAGER_URL, ('GET',), 
-        functions.manager_catalog_import),
+    (r'^%supload/$' % core.MANAGER_URL, (
+        None,
+        functions.image_upload
+    ), 0),
 
-    (r'^%scatalog/upload/$' % core.MANAGER_URL, ('POST',), 
-        functions.manager_catalog_image_upload),
+    (r'^%sresize/$' % core.MANAGER_URL, (
+        None,
+        functions.image_resize
+    ), 0),
 
-#    (r'^%scatalog/image/clear/$' % core.MANAGER_URL, ('POST',), 
-#        functions.clear_catalog_image),
+    (r'^%sbrowse/$' % core.MANAGER_URL, (
+        None,
+        functions.image_browse
+    ), 0),
 
-    (r'^%suploaded/remove/$' % core.MANAGER_URL, ('POST',), 
-        functions.remove_uploaded_image),
+    (r'^%schoice/$' % core.MANAGER_URL, (
+        None,
+        functions.image_choice
+    ), 0),
 
-    (r'^%supload/$' % core.MANAGER_URL, ('POST',), 
-        functions.image_upload),
+    (r'^/(?P<name>.{1,75})\.html$', (
+        functions.static_page,
+        None
+    ), 1),
 
-    (r'^%sresize/$' % core.MANAGER_URL, ('POST',), 
-        functions.image_resize),
+    (r'^/catalog/$', (
+        functions.catalog_page,
+        None
+    ), 1),
 
-    (r'^%sbrowse/$' % core.MANAGER_URL, ('POST',), 
-        functions.image_browse),
+    (r'^/catalog/(?P<item>\d+)/$', (
+        functions.catalog_item_page,
+        None
+    ), 1),
 
-    (r'^%schoice/$' % core.MANAGER_URL, ('POST',), 
-        functions.image_choice),
+    (r'^/catalog/category-(?P<pk>\d+)/$', (
+        functions.catalog_category_page,
+        None
+    ), 1),
 
-    (r'^/(?P<name>.{1,75})\.html$', ('GET',), 
-        functions.static_page),
-
-    (r'^/catalog/$', ('GET',), 
-        functions.catalog_page),
-
-    (r'^/catalog/(?P<item>\d+)/$', ('GET',), 
-        functions.catalog_item_page),
-
-    (r'^/catalog/category-(?P<pk>\d+)/$', ('GET',), 
-        functions.catalog_category_page),
-
-    (r'^/connect/$', ('GET',), 
-        functions.connect_page),
-
-    (r'^/connect/$', ('POST',), 
-        functions.connect_page_post),
+    (r'^/connect/$', (functions.connect_page, None), 0),
+    (r'^/connect/$', (None, functions.connect_page_post), 0)
 )

@@ -36,15 +36,30 @@ def response(code, message, headers=[], body=''):
     return 'HTTP/1.0 %s %s\r\n\r\n%s' % (code, message, body)
 
 
-def error(code, message):
-    body = error_page(code)
+def error(code):
+    if code == 400:
+        message = "Bad Request"
+    if code == 403:
+        message = "Forbidden"
+    if code == 404:
+        message = "Not Found"
+    if code == 405:
+        message = "Method Not Allowed"
+    if code == 411:
+        message = "Length Required"
+    if code == 413:
+        message = "Request Entity Too Large"
+    if code == 500:
+        message = "Internal Error"
+
+    body = error_page(code, message)
     headers = ['Content-Length: %s' % body.__len__()]
     return response(code, message, headers, body)
 
 
 def redirect(uri, headers=[]):
-    headers.append('Location: %s' % uri,)
-    return response(302, 'Moved Temporarily', headers)
+    line = ['Location: %s' % uri]
+    return response(302, 'Moved Temporarily', headers + line)
 
 
 def html_page(path, variables, request=None):
@@ -73,21 +88,7 @@ def json_data(data):
     return response(200, "OK", headers, body)
 
 
-def error_page(code):
-    if code == 400:
-        message = "Bad Request"
-    if code == 403:
-        message = "Forbidden"
-    if code == 404:
-        message = "Not Found"
-    if code == 405:
-        message = "Method Not Allowed"
-    if code == 411:
-        message = "Length Required"
-    if code == 413:
-        message = "Request Entity Too Large"
-    if code == 500:
-        message = "Internal Error"
+def error_page(code, message):
 
     context = {
         'code': code,

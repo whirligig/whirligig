@@ -579,7 +579,7 @@ table.dashboard .sitemap .waiting {
 	padding: 22px 22px 0 0;
 	height: 50px;
 	text-align: right;
-	background: url(/admin/static/arrow.png) no-repeat 20px 20px;
+	background: url(/manager/static/arrow.png) no-repeat 20px 20px;
 }
 #layouts .columnwrapper {
 	display: none;
@@ -612,7 +612,7 @@ table.dashboard .sitemap .waiting {
     display: none;
 }
 .checkbox-label{
-    background:url("/admin/static/non-checked.png") 10px 0 no-repeat;
+    background:url("/manager/static/non-checked.png") 10px 0 no-repeat;
     padding-left: 50px;
     margin: 5px;
     height: 32px;
@@ -623,7 +623,7 @@ table.dashboard .sitemap .waiting {
     color: #8f4237;
 }
 .label-selected{
-    background: url("/admin/static/checked.png") 10px 0 no-repeat;
+    background: url("/manager/static/checked.png") 10px 0 no-repeat;
     color: #82cb2f;
 }
 
@@ -760,13 +760,13 @@ li.float-selected {
 	border:2px solid #444;
 }
 .img_float_left {
-	background: url(/admin/static/float-left.png) no-repeat 2px 2px;
+	background: url(/manager/static/float-left.png) no-repeat 2px 2px;
 }
 .img_float_right {
-	background: url(/admin/static/float-right.png) no-repeat 2px 2px;
+	background: url(/manager/static/float-right.png) no-repeat 2px 2px;
 }
 .img_float_none {
-	background: url(/admin/static/float-none.png) no-repeat 2px 2px;
+	background: url(/manager/static/float-none.png) no-repeat 2px 2px;
 }
 #image_result > table {
 	width: 100%;
@@ -838,7 +838,7 @@ div#upload_result ul.column li:hover {
 #item_pic {
 	width: 420px;
 	height: 250px;
-	background: url(/admin/static/item.png) no-repeat 0 15px;
+	background: url(/manager/static/item.png) no-repeat 0 15px;
 }
 #catalog .catalog_wizard {
 	text-align: center;
