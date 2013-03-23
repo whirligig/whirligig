@@ -1,6 +1,12 @@
+install and run server with arguments:
 
-1. install and run server with arguments:
-    python install.py /manager/ && python server.py
+```bash
+python install.py /manager/
+python server.py start
+```
 
-2. run test in an another shell:
-    python tests.py
+run test in an another shell:
+
+```bash
+python tests.py
+```
