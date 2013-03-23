@@ -73,11 +73,6 @@ router = (
 
     (r'^%spage/$' % core.MANAGER_URL, (
         functions.static_pages_redirect,
-        None
-    ), 0),
-
-    (r'^%spage/$' % core.MANAGER_URL, (
-        None,
         functions.static_page_edit
     ), 0),
 
@@ -113,11 +108,6 @@ router = (
 
     (r'^%scatalog/$' % core.MANAGER_URL, (
         functions.manager_catalog,
-        None
-    ), 0),
-
-    (r'^%scatalog/$' % core.MANAGER_URL, (
-        None,
         functions.manager_catalog_listing
     ), 0),
 
@@ -138,31 +128,16 @@ router = (
 
     (r'^%scatalog/add/$' % core.MANAGER_URL, (
         functions.manager_catalog_add,
-        None
-    ), 0),
-
-    (r'^%scatalog/add/$' % core.MANAGER_URL, (
-        None,
         functions.manager_catalog_add_data
     ), 0),
 
     (r'^%scatalog/add/(?P<category>\d+)/$' % core.MANAGER_URL, (
         functions.manager_catalog_add_to_category,
-        None
-    ), 0),
-
-    (r'^%scatalog/add/(?P<category>\d+)/$' % core.MANAGER_URL, (
-        None,
         functions.manager_catalog_add_to_category_post
     ), 0),
 
     (r'^%scatalog/edit/$' % core.MANAGER_URL, (
         functions.manager_catalog_edit,
-        None
-    ), 0),
-
-    (r'^%scatalog/edit/$' % core.MANAGER_URL, (
-        None,
         functions.manager_catalog_edit_data
     ), 0),
 
@@ -231,6 +206,8 @@ router = (
         None
     ), 1),
 
-    (r'^/connect/$', (functions.connect_page, None), 0),
-    (r'^/connect/$', (None, functions.connect_page_post), 0)
+    (r'^/connect/$', (
+        functions.connect_page,
+        functions.connect_page_post
+    ), 0)
 )
