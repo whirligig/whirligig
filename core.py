@@ -21,8 +21,8 @@ import urllib, urllib2, time, json, hashlib, re, os
 import uuid
 import sqlite3
 
-ROOT = os.path.dirname(__file__).replace('\\', '/')
-VAR_ROOT = os.path.join(ROOT, 'var/').replace('\\', '/')
+ROOT = os.path.dirname(__file__)
+VAR_ROOT = os.path.join(ROOT, 'var/')
 
 class SqliteManager(object):
 
