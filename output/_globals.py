@@ -111,7 +111,7 @@ def not_equal(left, right):
 
 
 def manager_nav(request):
-    o = '<ul class="menu manager-menu">'
+    o = '<ul class="menu manager-nav">'
     o += '<li %s><a href="%s">Dashboard</a></li>' % (
         'class="active"' if request.get('path', '') == core.MANAGER_URL else '',
         core.MANAGER_URL
@@ -268,7 +268,7 @@ def print_menu(name, request=None):
     nav.done()
     html = ''
     if rows:
-        html = '<ul class="%s-nav">' % name
+        html = '<ul class="menu %s-nav">' % name
         if request:
             for row in rows:
                 label = row[2]

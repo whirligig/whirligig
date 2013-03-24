@@ -16,7 +16,7 @@
     <div id="wrapper" class="block">
       <div class="header block">
         <div class="sitename left"><h1><a href="/">{{ SITENAME }}</a></h1></div>
-        <div class="block right">{{ print_menu('main',request) }}</div>
+        <div class="block right">{{ print_menu('main',REQUEST) }}</div>
       </div>
       
       <div id="content" class="block">{% block content %}{% endblock %}</div>

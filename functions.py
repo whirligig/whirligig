@@ -1695,7 +1695,7 @@ def static_page(request, name):
     content['updated'] = page[5]
 
     context = {
-        'content': content
+        'page': content
     }
 
     return http.html_page(template, context, request)

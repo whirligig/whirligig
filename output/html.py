@@ -521,7 +521,7 @@ def template(filename, context, request):
     result = ''
 
     context = dict(_globals.variableCollection.items() + context.items())
-    context['request'] = request
+    context['REQUEST'] = request
 
     result = ''.join(str(token.render(context)) for token in lexer.syntax_analyze())
     return result
