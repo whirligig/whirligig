@@ -1,9 +1,9 @@
 {% extends "base.tpl" %}
 
-{% block title %}{{ content.title }}{% endblock %}
+{% block title %}{{ page.title }}{% endblock %}
 
 {% block content %}
 
-<div>{{ content.content }}</div>
+<div>{{ page.content }}</div>
 
 {% endblock %}
