@@ -833,13 +833,30 @@ $(function(){
 		});
 	});
 
-	$(".settings .connect #radio_yes").bind('click', function(){
+	$(".settings .connect #radio_yes").bind('click', function() {
 		$(".connect_email").slideDown('fast');
 	});
 
-	$(".settings .connect #radio_no").bind('click', function(){
+	$(".settings .connect #radio_no").bind('click', function() {
 		$(".connect_email").slideUp('fast');
 	});
+
+    $(".settings .func input").bind('click', function() {
+        var theme = $(this).parent().find('input[name="theme"]').val();
+        $.post('<<MANAGER_URL>>settings/theme/', {'theme': theme}, function(data) {
+            if (data) {
+                $("#notificator").notification({
+                    text: 'Current theme: "' + data + '"',
+                    type: 'info'
+                });
+            } else {
+                $("#notificator").notification({
+                    text: 'Theme has not been changed',
+                    type: 'error'
+                });
+            };
+        });
+    });
 
 	$.fn.notification = function(options) {
 		var defaults = {
@@ -872,13 +889,16 @@ $(function(){
 				$ok.bind('click', function(){
 					defaults['onOk']();
 					$ok.unbind('click');
+                    $this.removeClass();
 					$this.slideUp('fast');
 				});
 			}
-			
+
 			$cancel = $this.find("#cancel-button");
 			$cancel.unbind('click');
 			$cancel.bind('click', function() {
+                $cancel.unbind('click');
+                $this.removeClass();
 				$this.slideUp('fast');
 			})
 		});
