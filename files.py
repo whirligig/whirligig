@@ -23,7 +23,6 @@ import json
 import urlparse
 import hashlib
 import shutil
-import http
 import core
 
 MANAGER_STATIC_PATH = '%s/manager/static/' % core.ROOT
@@ -48,93 +47,6 @@ if not os.path.exists(UPLOAD_BASE_PATH):
     except:
         print "Unable create upload directory (%s)" % UPLOAD_BASE_PATH
         exit(0)
-
-
-def no_image(size):
-    if isinstance(size, int) and size in IMAGE_SIZE.values():
-        return '/static/no-image-%s.png' % size
-
-    if isinstance(size, basestring) and size.upper() in IMAGE_SIZE.keys():
-        return '/static/no-image-%s.png' % IMAGE_SIZE[size.upper()]
-
-    return ''
-
-
-def get_theme_description(theme):
-    themes_dir = os.path.join(core.ROOT, 'themes')
-    desc_file = os.path.join(themes_dir, theme, 'description.txt')
-    if not os.path.isfile(desc_file):
-        return None
-
-    try:
-        f = open(desc_file, 'r')
-    except IOError:
-        return None
-
-    description = {}
-    for line in f:
-        l = re.match(r'^([^:]+):\s(.+?)(\r|\n|$)+', line)
-        if l:
-            description[l.group(1)] = l.group(2)
-    f.close()
-
-    if 'name' not in description:
-        description['name'] = theme
-
-    if 'author' not in description:
-        description['author'] = 'unknown'
-
-    if 'url' not in description:
-        description['url'] = ''
-
-    if 'use logo' in description and description['use logo'].lower() == 'yes':
-        description['use logo'] = 1
-    else:
-        description['use logo'] = 0
-
-    if 'navigation' in description:
-        l = description['navigation'].split(',')
-        description['navigation'] = filter(bool, map(lambda x: x.strip(), l))
-
-    return description
-
-
-def get_theme_screenshots(theme):
-    size = IMAGE_SIZE['MINI']
-    unsecure = os.path.join(core.ROOT, 'themes', theme, 'screenshots')
-    scr_dir = os.path.abspath(unsecure)
-    if not os.path.isdir(scr_dir) or not scr_dir.startswith(core.ROOT):
-        return []
-
-    images = []
-
-    images.append(os.path.join(scr_dir, 'front_page.png'))
-    images.append(os.path.join(scr_dir, 'static_page.png'))
-    images.append(os.path.join(scr_dir, 'catalog.png'))
-    images.append(os.path.join(scr_dir, 'catalog_category.png'))
-    images.append(os.path.join(scr_dir, 'catalog_item.png'))
-    images.append(os.path.join(scr_dir, 'connect.png'))
-
-    result = map(lambda x: x if os.path.isfile(x) else no_image(size), images)
-
-    return result
-
-
-#
-# get installed themes
-#
-def get_themes():
-    themes_dir = os.path.join(core.ROOT, 'themes')
-    folders = os.listdir(themes_dir)
-    result = []
-    for folder in folders:
-        description = get_theme_description(folder)
-        if not description:
-            continue
-
-        result.append((folder, description))
-
-    return result
 
 
 #
@@ -240,11 +152,7 @@ class Cache(object):
         content = f.read()
         f.close()
 
-        headers = (
-            'Content-Type: text/html',
-            'Content-Length: %s' % content.__len__()
-        )
-        return http.response(200, "OK", headers, content)
+        return content
 
 
     def set(self, uri, content):
@@ -596,3 +504,108 @@ def delete_image(uploaded_manager, image_path):
 
     for size_name in IMAGE_SIZE:
         delete_thumbnail(image_path, IMAGE_SIZE[size_name])
+
+
+def install_theme(folder_name):
+    if not isinstance(folder_name, basestring):
+        return False
+
+    description = get_theme_description(folder_name)
+
+    config = core.ConfigManager()
+
+    config.set('theme', description['name'])
+    config.set('theme_author', description['author'])
+    config.set('theme_author_url', description['url'])
+    config.set('theme_use_logo', description['use logo'])
+    config.set('theme_navigation', ', '.join(description['navigation']))
+    config.done()
+
+    return True
+
+
+def no_image(size):
+    if isinstance(size, int) and size in IMAGE_SIZE.values():
+        return '/static/no-image-%s.png' % size
+
+    if isinstance(size, basestring) and size.upper() in IMAGE_SIZE.keys():
+        return '/static/no-image-%s.png' % IMAGE_SIZE[size.upper()]
+
+    return ''
+
+
+def get_theme_description(theme):
+    themes_dir = os.path.join(core.ROOT, 'themes')
+    desc_file = os.path.join(themes_dir, theme, 'description.txt')
+    if not os.path.isfile(desc_file):
+        return None
+
+    try:
+        f = open(desc_file, 'r')
+    except IOError:
+        return None
+
+    description = {}
+    for line in f:
+        l = re.match(r'^([^:]+):\s(.+?)(\r|\n|$)+', line)
+        if l:
+            description[l.group(1)] = l.group(2)
+    f.close()
+
+    if 'name' not in description:
+        description['name'] = theme
+
+    if 'author' not in description:
+        description['author'] = 'unknown'
+
+    if 'url' not in description:
+        description['url'] = ''
+
+    if 'use logo' in description and description['use logo'].lower() == 'yes':
+        description['use logo'] = 1
+    else:
+        description['use logo'] = 0
+
+    if 'navigation' in description:
+        l = description['navigation'].split(',')
+        description['navigation'] = filter(bool, map(lambda x: x.strip(), l))
+
+    return description
+
+
+def get_theme_screenshots(theme):
+    size = IMAGE_SIZE['MINI']
+    unsecure = os.path.join(core.ROOT, 'themes', theme, 'screenshots')
+    scr_dir = os.path.abspath(unsecure)
+    if not os.path.isdir(scr_dir) or not scr_dir.startswith(core.ROOT):
+        return []
+
+    images = []
+
+    images.append(os.path.join(scr_dir, 'front_page.png'))
+    images.append(os.path.join(scr_dir, 'static_page.png'))
+    images.append(os.path.join(scr_dir, 'catalog.png'))
+    images.append(os.path.join(scr_dir, 'catalog_category.png'))
+    images.append(os.path.join(scr_dir, 'catalog_item.png'))
+    images.append(os.path.join(scr_dir, 'connect.png'))
+
+    result = map(lambda x: x if os.path.isfile(x) else no_image(size), images)
+
+    return result
+
+
+#
+# get installed themes
+#
+def get_themes():
+    themes_dir = os.path.join(core.ROOT, 'themes')
+    folders = os.listdir(themes_dir)
+    result = []
+    for folder in folders:
+        description = get_theme_description(folder)
+        if not description:
+            continue
+
+        result.append((folder, description))
+
+    return result

@@ -17,12 +17,19 @@
 
 from abc import ABCMeta
 from random import choice
-import urllib, urllib2, time, json, hashlib, re, os
+import urllib
+import urllib2
+import time
+import json
+import hashlib
+import re
+import os
 import uuid
 import sqlite3
 
 ROOT = os.path.dirname(__file__)
 VAR_ROOT = os.path.join(ROOT, 'var/')
+
 
 class SqliteManager(object):
 
@@ -61,6 +68,7 @@ class SqliteManager(object):
     def done(self):
         self.cursor.close()
         self.connection.close()
+
 
 class ConfigManager(SqliteManager):
 
@@ -102,19 +110,6 @@ class ConfigManager(SqliteManager):
             return empty
 
         return row[0][0]
-
-
-    def install_theme(self, folder_name):
-        if not isinstance(folder_name, basestring):
-            return False
-
-        description = get_theme_description(folder_name)
-
-        self.set('theme', description['name'])
-        self.set('theme_author', description['author'])
-        self.set('theme_use_logo', description['use logo'])
-        self.set('theme_navigation', description['navigation'])
-        return True
 
 
 class AuthManager(SqliteManager):

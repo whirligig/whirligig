@@ -34,6 +34,8 @@ import seo
 def reload_core():
     from output import _globals
     reload(core)
+    reload(files)
+    reload(html)
     reload(_globals)
 
 CACHE = files.Cache()
@@ -149,14 +151,20 @@ def manager_config_theme(request):
 def manager_config_theme_post(request):
     variables = request['variables']
     theme = variables.get('theme')
+    name = variables.get('name', theme)
     themes = map(lambda x: x[0], files.get_themes())
     if theme and (theme != core.THEME) and (theme in themes):
-        config = core.ConfigManager()
-        config.install_theme(theme)
-        config.done()
-        return http.text_data('success')
+        if files.install_theme(theme):
 
-    return http.text_data('error')
+            CACHE.clear()
+            reload_core()
+
+            return http.text_data(name)
+
+    if theme == core.THEME:
+        return http.text_data(name)
+
+    return http.text_data('')
 
 
 @secure_page

@@ -324,9 +324,9 @@ class Connection(asyncore.dispatcher):
 
         # check cache for existing item
         if request_method == 'GET' and cachable:
-            response = self.cache.get(request_uri)
+            content = self.cache.get(request_uri)
 
-            if not response:
+            if not content:
                 need_generate_response = True
                 need_cache = True
 
@@ -339,7 +339,15 @@ class Connection(asyncore.dispatcher):
             need_generate_response = True
             need_cache = False
 
-        if need_generate_response:
+        if not need_generate_response:
+
+            headers = (
+                'Content-Type: text/html',
+                'Content-Length: %s' % content.__len__()
+            )
+
+            response = http.response(200, "OK", headers, content)
+        else:
             # generate response by function
             parameters = m.groups()
 

@@ -12,7 +12,10 @@
 			<tr><td>navigation:</td><td>{{ theme|theme_navigations }}</td></tr>
 			<tr><td>author:</td><td>{{ theme|theme_author }}</td></tr>
 		</table>
-		<div class="func block"><input type="button" class="form-submit" name="change" value="Change" /></div>
+		<div class="func block">
+			<input type="hidden" name="theme" value="{{ theme.0 }}" />
+			<input type="button" class="form-submit" name="change" value="Change" />
+		</div>
 	</li>
 {% endfor %}
 </ul>
