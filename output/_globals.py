@@ -49,6 +49,10 @@ def inc(i1, i2=1):
     return i1 + i2
 
 
+def no_image(size):
+    return files.no_image(size)
+
+
 def groups(value, linecount, fill_with=None):
     result = []
     tmp = []
@@ -318,8 +322,6 @@ def theme_description(theme):
     values += screenshots
     values.append(', '.join(desc['navigation']))
     values.append(desc['author'])
-
-    print values
 
     o = '''<div class="theme-name">{0}</div>
     <table class="screenshots"><tr>

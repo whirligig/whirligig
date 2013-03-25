@@ -3,9 +3,9 @@
 {% block title %}THEMES{% endblock %}
 
 {% block content %}
-<ul>
+<ul class="settings">
 {% for theme in themes %}
-	<li>{{ theme_description(theme) }}</li>
+	<li class="theme">{{ theme_description(theme) }}</li>
 {% endfor %}
 </ul>
 {% endblock %}

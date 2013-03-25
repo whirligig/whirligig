@@ -336,6 +336,13 @@ table.dashboard .sitemap .waiting {
 #settings_logo .remove:hover {
 	color: #990000;
 }
+li.theme {
+	border: 1px solid #ddd;
+	margin-bottom: 10px;
+}
+li.theme img {
+	border: 1px solid #f5f5f5;
+}
 
 /* navigation */
 .empty-list {

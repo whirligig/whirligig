@@ -29,6 +29,35 @@ import core
 MANAGER_STATIC_PATH = '%s/manager/static/' % core.ROOT
 THEME_STATIC_PATH = '%s/themes/%s/static/' % (core.ROOT, core.THEME)
 
+UPLOAD_BASE_PATH = '%s/uploads' % core.ROOT
+UPLOAD_BASE_URL = "/uploads"
+
+IMAGE_MAX_SIZE = 1024*1024*4 # 4 megabytes
+IMAGE_FORMATS = ('jpg', 'jpeg', 'bmp', 'png', 'tif', 'tiff', 'gif')
+IMAGE_SIZE = {}
+IMAGE_SIZE['MINI'] = 70
+IMAGE_SIZE['SMALL'] = 150
+IMAGE_SIZE['MEDIUM'] = 500
+IMAGE_SIZE['BIG'] = 900
+RATIO = 1.1
+
+if not os.path.exists(UPLOAD_BASE_PATH):
+    try:
+        os.makedirs(UPLOAD_BASE_PATH)
+    except:
+        print "Unable create upload directory (%s)" % UPLOAD_BASE_PATH
+        exit(0)
+
+
+def no_image(size):
+    if isinstance(size, int) and size in IMAGE_SIZE.values():
+        return '/static/no-image-%s.png' % size
+
+    if isinstance(size, basestring) and size.upper() in IMAGE_SIZE.keys():
+        return '/static/no-image-%s.png' % IMAGE_SIZE[size.upper()]
+
+    return ''
+
 
 def get_theme_description(theme):
     themes_dir = os.path.join(core.ROOT, 'themes')
@@ -67,6 +96,7 @@ def get_theme_description(theme):
 
 
 def get_theme_screenshots(theme):
+    size = IMAGE_SIZE['MINI']
     unsecure = os.path.join(core.ROOT, 'themes', theme, 'screenshots')
     scr_dir = os.path.abspath(unsecure)
     if not os.path.isdir(scr_dir) or not scr_dir.startswith(core.ROOT):
@@ -81,7 +111,7 @@ def get_theme_screenshots(theme):
     images.append(os.path.join(scr_dir, 'catalog_item.png'))
     images.append(os.path.join(scr_dir, 'connect.png'))
 
-    result = map(lambda x: x if os.path.isfile(x) else '', images)
+    result = map(lambda x: x if os.path.isfile(x) else no_image(size), images)
 
     return result
 
@@ -115,6 +145,8 @@ def get_static_path(uri):
         root = MANAGER_STATIC_PATH
     elif uri == '/static/core.js':
         root = MANAGER_STATIC_PATH
+    elif uri in map(lambda x: no_image(x), IMAGE_SIZE.values()):
+        root = MANAGER_STATIC_PATH + 'no-image/'
     elif uri.startswith('/static/pirobox/'):
         root = MANAGER_STATIC_PATH + 'pirobox/'
     elif uri.startswith(core.MANAGER_URL + 'static/'):
@@ -257,27 +289,6 @@ class Cache(object):
 
     def clear(self):
         shutil.rmtree(self.path, ignore_errors=True)
-
-
-UPLOAD_BASE_PATH = '%s/uploads' % core.ROOT
-UPLOAD_BASE_URL = "/uploads"
-
-IMAGE_MAX_SIZE = 1024*1024*4 # 4 megabytes
-IMAGE_FORMATS = ('jpg', 'jpeg', 'bmp', 'png', 'tif', 'tiff', 'gif')
-IMAGE_SIZE = {}
-IMAGE_SIZE['MINI'] = 70
-IMAGE_SIZE['SMALL'] = 150
-IMAGE_SIZE['MEDIUM'] = 500
-IMAGE_SIZE['BIG'] = 900
-RATIO = 1.1
-
-
-if not os.path.exists(UPLOAD_BASE_PATH):
-    try:
-        os.makedirs(UPLOAD_BASE_PATH)
-    except:
-        print "Unable create upload directory (%s)" % UPLOAD_BASE_PATH
-        exit()
 
 
 def find_extension(format):
@@ -465,29 +476,34 @@ def generate_thumbnail(source_path, size):
             image.save(thumbnail, image.format, quality=95)
         except:
             return None
+
     return "%s/%s/%s" % (UPLOAD_BASE_URL, str(size), filename)
 
 
 def get_thumbnail_path(image_path, size):
     if not image_path:
         return None
+
     filename = os.path.basename(image_path)
     thumbnail_path = os.path.join(UPLOAD_BASE_PATH, str(size))
     thumbnail_path = os.path.join(thumbnail_path, filename)
     if not os.path.isfile(thumbnail_path):
         return None
+
     return thumbnail_path
 
 
 def get_thumbnail_url(image_url, size):
     if not image_url:
-        return '%sstatic/no-image-%s.png' % (core.MANAGER_URL, size)
+        return no_image(size)
+
     filename = os.path.basename(image_url)
     thumbnail_url = urlparse.urljoin(UPLOAD_BASE_URL, str(size))
     thumbnail_url = urlparse.urljoin(thumbnail_url, filename)
     image_path = url_to_path(thumbnail_url)
     if not os.path.isfile(image_path):
         return None
+
     return thumbnail_url
 
 
@@ -497,8 +513,10 @@ def get_mini_image(image_path):
         thumbnail = generate_thumbnail(image_path, IMAGE_SIZE['MINI'])
         if thumbnail:
             return thumbnail
+
         else:
             return get_thumbnail_url(None, IMAGE_SIZE['MINI'])
+
     return thumbnail_url
 
 
@@ -508,8 +526,10 @@ def get_small_image(image_path):
         thumbnail = generate_thumbnail(image_path, IMAGE_SIZE['SMALL'])
         if thumbnail:
             return thumbnail
+
         else:
             return get_thumbnail_url(None, IMAGE_SIZE['SMALL'])
+
     return thumbnail_url
 
 
@@ -519,8 +539,10 @@ def get_medium_image(image_path):
         thumbnail = generate_thumbnail(image_path, IMAGE_SIZE['MEDIUM'])
         if thumbnail:
             return thumbnail
+
         else:
             return get_thumbnail_url(None, IMAGE_SIZE['MEDIUM'])
+
     return thumbnail_url
 
 
@@ -530,8 +552,10 @@ def get_big_image(image_path):
         thumbnail = generate_thumbnail(image_path, IMAGE_SIZE['BIG'])
         if thumbnail:
             return thumbnail
+
         else:
             return get_thumbnail_url(None, IMAGE_SIZE['BIG'])
+
     return thumbnail_url
 
 
@@ -540,6 +564,7 @@ def delete_thumbnail(image_path, size):
     thumbnail_dir = os.path.join(UPLOAD_BASE_PATH, str(size))
     if not thumbnail:
         return None
+
     try:
         os.remove(thumbnail)
         if not os.listdir(thumbnail_dir):
@@ -567,6 +592,3 @@ def delete_image(uploaded_manager, image_path):
 
     for size_name in IMAGE_SIZE:
         delete_thumbnail(image_path, IMAGE_SIZE[size_name])
-
-if __name__ == '__main__':
-    print get_themes()
