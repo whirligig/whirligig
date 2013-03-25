@@ -28,7 +28,7 @@ def length(value):
     return value.__len__()
 
 def is_none(value):
-    if not value or value in ['None', '0', 'False', '']:
+    if not value or value in ('None', '0', 'False', ''):
         return True
     return False
 
@@ -49,6 +49,27 @@ def escape(value):
 
 def linebreaksbr(value):
     return value.replace('\n', '<br />')
+
+def theme_name(theme):
+    name = theme[1]['name'] if theme else ''
+    return name
+
+def theme_navigations(theme):
+    navigations = theme[1]['navigation'] if theme else ''
+    return ', '.join(navigations)
+
+def theme_author(theme):
+    if not theme:
+        return ''
+
+    desc = theme[1]
+
+    if desc['url']:
+        author = '<a href="%s">%s</a>' % (desc['url'], desc['author'])
+    else:
+        author = desc['author']
+
+    return author
 
 def categories(catalog):
     return catalog[0]
@@ -140,6 +161,9 @@ filterCollection = {
     'is_not_true_or_empty': is_not_true_or_empty,
     'escape': escape,
     'linebreaksbr': linebreaksbr,
+    'theme_name': theme_name,
+    'theme_navigations': theme_navigations,
+    'theme_author': theme_author,
     'categories': categories,
     'items': items,
     'custom_fields': custom_fields,

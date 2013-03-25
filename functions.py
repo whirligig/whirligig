@@ -34,6 +34,8 @@ import seo
 def reload_core():
     from output import _globals
     reload(core)
+    reload(files)
+    reload(html)
     reload(_globals)
 
 CACHE = files.Cache()
@@ -133,12 +135,46 @@ def manager_config_post(request):
 
 
 @secure_page
+def manager_config_theme(request):
+    template = 'manager/templates/themes.tpl'
+
+    themes = files.get_themes()
+
+    context = {
+        'themes': themes
+    }
+
+    return http.html_page(template, context, request)
+
+
+@secure_page
+def manager_config_theme_post(request):
+    variables = request['variables']
+    theme = variables.get('theme')
+    name = variables.get('name', theme)
+    themes = map(lambda x: x[0], files.get_themes())
+    if theme and (theme != core.THEME) and (theme in themes):
+        if files.install_theme(theme):
+
+            CACHE.clear()
+            reload_core()
+
+            return http.text_data(name)
+
+    if theme == core.THEME:
+        return http.text_data(name)
+
+    return http.text_data('')
+
+
+@secure_page
 def manager_config_logo_delete(request):
     variables = request['variables']
     action = variables.get('action', 'error')
     if action == 'delete' and files.delete_logo():
         CACHE.clear()
         return http.text_data('success')
+
     return http.text_data('error')
 
 
@@ -151,6 +187,7 @@ def manager_seo_sitemap(request):
     if action == 'create':
         seo.create_sitemap(request)
         return http.text_data('created')
+
     return http.text_data('error')
 
 
@@ -711,6 +748,7 @@ def manager_catalog_import(request):
 
     return http.html_page(template, {}, request)
 
+
 # ------- static page edit -----------
 
 def static_page_stuctures():
@@ -954,7 +992,6 @@ def static_page_list(request, pagitation_page=1):
     return http.html_page(template, context, request)
 
 
-
 @secure_page
 def static_pages_redirect(request):
     return http.redirect('%spages/' % core.MANAGER_URL)
@@ -1004,10 +1041,9 @@ def static_page_edit(request):
     return http.html_page(template, context, request)
 
 
-
 @secure_page
 def static_page_preview(request):
-    template = 'static_page.tpl'
+    template = 'static.tpl'
 
     variables = request['variables']
     content = {}
@@ -1020,7 +1056,6 @@ def static_page_preview(request):
     }
 
     return http.html_page(template, context, request)
-
 
 
 @secure_page
@@ -1094,7 +1129,7 @@ def static_page_delete(request):
 
 @secure_page
 def manager_navigation_list(request):
-    template = 'manager/templates/navigations_page.tpl'
+    template = 'manager/templates/navigations.tpl'
 
     nav = core.NavigationManager()
     allitems = nav.get_items()
@@ -1466,7 +1501,7 @@ def manager_navigation_remove(request):
 # =================================
 
 def connect_page(request):
-    template = 'connect_page.tpl'
+    template = 'connect.tpl'
 
     if not core.CONNECT_ENABLED:
         return http.error(404)
@@ -1480,7 +1515,7 @@ def connect_page(request):
 
 
 def connect_page_post(request):
-    template = 'connect_page.tpl'
+    template = 'connect.tpl'
 
     if not core.CONNECT_ENABLED:
         return http.error(404)
@@ -1563,7 +1598,7 @@ Subject: %s: Message
 # =================================
 
 def index_page(request):
-    template = 'front_page.tpl'
+    template = 'front.tpl'
 
     content = "FRONT PAGE"
 
@@ -1575,7 +1610,7 @@ def index_page(request):
 
 
 def login_page(request):
-    template = 'manager/templates/login_page.tpl'
+    template = 'manager/templates/login.tpl'
 
     error = ''
     variables = request['variables']
@@ -1608,13 +1643,13 @@ def logout_page(request):
 
 @secure_page
 def manager_page(request):
-    template = 'manager/templates/dashboard_page.tpl'
+    template = 'manager/templates/dashboard.tpl'
 
     return http.html_page(template, {}, request)
 
 
 def catalog_page(request):
-    template = 'catalog_page.tpl'
+    template = 'catalog.tpl'
 
     if not core.CATALOG_ENABLED:
         return http.error(404)
@@ -1636,7 +1671,7 @@ def catalog_page(request):
 
 
 def catalog_category_page(request, pk):
-    template = 'catalog_category_page.tpl'
+    template = 'catalog_category.tpl'
 
     if not core.CATALOG_ENABLED:
         return http.error(404)
@@ -1658,7 +1693,7 @@ def catalog_category_page(request, pk):
 
 
 def catalog_item_page(request, item):
-    template = 'catalog_item_page.tpl'
+    template = 'catalog_item.tpl'
 
     if not core.CATALOG_ENABLED:
         return http.error(404)
@@ -1679,7 +1714,7 @@ def catalog_item_page(request, item):
 
 
 def static_page(request, name):
-    template = 'static_page.tpl'
+    template = 'static.tpl'
 
     pages = core.PageManager()
     page = pages.show(name)

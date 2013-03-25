@@ -27,7 +27,7 @@ $(function(){
 	<div class="wrap">
 		<div id="image_preview">
 			{% if item|main_image %}<img src="{{ item|main_image|get_small_image }}" alt="" title="" />{% endif %}
-			{% if item|main_image|is_none %}<img src="{{ MANAGER_URL }}static/no-image-150.png" alt="No image" title="No image" />{% endif %}
+			{% if item|main_image|is_none %}<img src="{{ no_image('small') }}" alt="No image" title="No image" />{% endif %}
 		</div>
 		{% if item|extra_images|length %}
 		<table class="extra_images">

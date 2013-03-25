@@ -20,6 +20,7 @@
 #
 import re
 import core
+import files
 import protection
 import _filters
 
@@ -46,6 +47,10 @@ def is_auth(request):
 
 def inc(i1, i2=1):
     return i1 + i2
+
+
+def no_image(size):
+    return files.no_image(size)
 
 
 def groups(value, linecount, fill_with=None):
@@ -304,4 +309,20 @@ def connect_form():
     <tr><td><textarea name="message">Message</textarea></td></tr>
     <tr><td><input type="submit" name="submit" value="Send" /></td></tr>
     </table></form></div>''' % protection.set_server_token()
+    return o
+
+
+def theme_screenshots(theme):
+    folder = theme[0]
+    screenshots = files.get_theme_screenshots(folder)
+
+    o = '''<table class="screenshots"><tr>
+    <td><img src="{0}" alt="Front page" title="Front page" /></td>
+    <td><img src="{1}" alt="Static page" title="Static page" /></td>
+    <td><img src="{2}" alt="Catalog" title="Catalog" /></td>
+    <td><img src="{3}" alt="Catalog category" title="Catalog category" /></td>
+    <td><img src="{4}" alt="Catalog item" title="Catalog item" /></td>
+    <td><img src="{5}" alt="Connect" title="Connect" /></td>
+    </tr></table>'''.format(*screenshots)
+
     return o

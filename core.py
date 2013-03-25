@@ -17,12 +17,19 @@
 
 from abc import ABCMeta
 from random import choice
-import urllib, urllib2, time, json, hashlib, re, os
+import urllib
+import urllib2
+import time
+import json
+import hashlib
+import re
+import os
 import uuid
 import sqlite3
 
 ROOT = os.path.dirname(__file__)
 VAR_ROOT = os.path.join(ROOT, 'var/')
+
 
 class SqliteManager(object):
 
@@ -61,6 +68,7 @@ class SqliteManager(object):
     def done(self):
         self.cursor.close()
         self.connection.close()
+
 
 class ConfigManager(SqliteManager):
 
@@ -103,39 +111,6 @@ class ConfigManager(SqliteManager):
 
         return row[0][0]
 
-
-    def parse_theme(self, folder_name):
-        if not isinstance(folder_name, basestring):
-            return False
-
-        themes_dir = os.path.dirname(__file__) + '/themes/'
-        if folder_name not in os.listdir(themes_dir):
-            return False
-
-        try:
-            desc = open(themes_dir + folder_name + '/description.txt', 'r')
-        except IOError:
-            return False
-
-        d = {}
-        for line in desc:
-            l = re.match(r'^([^:]+):\s(.+?)(\r|\n|$)+', line)
-            if l:
-                d[l.group(1)] = l.group(2)
-        desc.close()
-
-        if 'name' in d:
-            self.set('theme', d['name'])
-        if 'author' in d:
-            self.set('theme_author', d['author'])
-        if 'use logo' in d:
-            if d['use logo'] == 'yes':
-                self.set('theme_use_logo', 1)
-            else:
-                self.set('theme_use_logo', 0)
-        if 'navigation' in d:
-            self.set('theme_navigation', d['navigation'])
-        return True
 
 class AuthManager(SqliteManager):
 
