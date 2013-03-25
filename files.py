@@ -41,6 +41,7 @@ IMAGE_SIZE['MEDIUM'] = 500
 IMAGE_SIZE['BIG'] = 900
 RATIO = 1.1
 
+
 if not os.path.exists(UPLOAD_BASE_PATH):
     try:
         os.makedirs(UPLOAD_BASE_PATH)
@@ -82,6 +83,9 @@ def get_theme_description(theme):
 
     if 'author' not in description:
         description['author'] = 'unknown'
+
+    if 'url' not in description:
+        description['url'] = ''
 
     if 'use logo' in description and description['use logo'].lower() == 'yes':
         description['use logo'] = 1
