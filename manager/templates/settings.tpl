@@ -3,6 +3,7 @@
 {% block title %}SETTINGS PAGE{% endblock %}
 
 {% block content %}
+
 <form action="" method="post" enctype="multipart/form-data">
 	<table class="settings">
 		<tr>

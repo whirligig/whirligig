@@ -95,7 +95,7 @@ def error_page(code, message):
         'message': message
     }
 
-    return html.template('error_page.tpl', context, None)
+    return html.template('error.tpl', context, None)
 
 
 #

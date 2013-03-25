@@ -41,6 +41,11 @@ router = (
         functions.manager_config_post
     ), 0),
 
+    (r'^%ssettings/theme/$' % core.MANAGER_URL, (
+        functions.manager_config_theme,
+        functions.manager_config_theme_post
+    ), 0),
+
     (r'^%ssettings/logo/clear/$' % core.MANAGER_URL, (
         None,
         functions.manager_config_logo_delete

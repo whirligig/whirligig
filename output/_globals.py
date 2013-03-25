@@ -20,6 +20,7 @@
 #
 import re
 import core
+import files
 import protection
 import _filters
 
@@ -304,4 +305,32 @@ def connect_form():
     <tr><td><textarea name="message">Message</textarea></td></tr>
     <tr><td><input type="submit" name="submit" value="Send" /></td></tr>
     </table></form></div>''' % protection.set_server_token()
+    return o
+
+
+def theme_description(theme):
+    folder = theme[0]
+    desc = theme[1]
+    screenshots = files.get_theme_screenshots(folder)
+
+    values = []
+    values.append(desc['name'])
+    values += screenshots
+    values.append(', '.join(desc['navigation']))
+    values.append(desc['author'])
+
+    print values
+
+    o = '''<div class="theme-name">{0}</div>
+    <table class="screenshots"><tr>
+    <td><img src="{1}" alt="Front page" title="Front page" /></td>
+    <td><img src="{2}" alt="Static page" title="Static page" /></td>
+    <td><img src="{3}" alt="Catalog" title="Catalog" /></td>
+    <td><img src="{4}" alt="Catalog category" title="Catalog category" /></td>
+    <td><img src="{5}" alt="Catalog item" title="Catalog item" /></td>
+    <td><img src="{6}" alt="Connect" title="Connect" /></td>
+    </tr></table>
+    <div class="theme-nav">Navigations: {7}</div>
+    <div class="theme-author">Author: {8}</div>'''.format(*values)
+
     return o

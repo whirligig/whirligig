@@ -104,38 +104,18 @@ class ConfigManager(SqliteManager):
         return row[0][0]
 
 
-    def parse_theme(self, folder_name):
+    def install_theme(self, folder_name):
         if not isinstance(folder_name, basestring):
             return False
 
-        themes_dir = os.path.dirname(__file__) + '/themes/'
-        if folder_name not in os.listdir(themes_dir):
-            return False
+        description = get_theme_description(folder_name)
 
-        try:
-            desc = open(themes_dir + folder_name + '/description.txt', 'r')
-        except IOError:
-            return False
-
-        d = {}
-        for line in desc:
-            l = re.match(r'^([^:]+):\s(.+?)(\r|\n|$)+', line)
-            if l:
-                d[l.group(1)] = l.group(2)
-        desc.close()
-
-        if 'name' in d:
-            self.set('theme', d['name'])
-        if 'author' in d:
-            self.set('theme_author', d['author'])
-        if 'use logo' in d:
-            if d['use logo'] == 'yes':
-                self.set('theme_use_logo', 1)
-            else:
-                self.set('theme_use_logo', 0)
-        if 'navigation' in d:
-            self.set('theme_navigation', d['navigation'])
+        self.set('theme', description['name'])
+        self.set('theme_author', description['author'])
+        self.set('theme_use_logo', description['use logo'])
+        self.set('theme_navigation', description['navigation'])
         return True
+
 
 class AuthManager(SqliteManager):
 
