@@ -2,6 +2,7 @@ import sys
 import os
 import re
 import requests
+import time
 import data
 
 dirname = os.path.join(os.path.dirname(__file__), '..')
@@ -95,5 +96,6 @@ if __name__ == '__main__':
         sys.stdout.write("TEST #%s... " % i)
         test_function(*args)
         i = i + 1
+        time.sleep(0.01)
     print "-------------------"
     print "All tests (%s) are passed" % (i-1)
