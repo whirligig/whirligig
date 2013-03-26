@@ -12,7 +12,7 @@ It contains:
 Whirligig allows manage static pages, create catalog of production/services,
 recieve feedbacks.
 
-For installation you need only Python 2.7 and PIL:
+For installation you need Python 2.6+ and PIL:
 
     python install.py /admin-path/
 
